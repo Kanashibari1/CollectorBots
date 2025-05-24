@@ -5,10 +5,10 @@ using UnityEngine;
 
 public class Scanner : MonoBehaviour
 {
-    private int _delay = 20;
-    private int _radius = 500;
     [SerializeField] private LayerMask _mask;
 
+    private int _delay = 5;
+    private int _radius = 500;
     private Queue<Resource> resourcesOnMap = new();
 
     public event Action<Queue<Resource>> ResourceFounded;

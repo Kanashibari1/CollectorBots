@@ -7,6 +7,7 @@ using UnityEngine;
 public class Base : MonoBehaviour
 {
     [SerializeField] private Transform _storage;
+
     private Scanner _scanner;
     private SpawnerBots _spawnerBots;
     private List<Bot> _freeBots = new();

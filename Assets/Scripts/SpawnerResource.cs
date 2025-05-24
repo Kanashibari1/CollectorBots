@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class SpawnerResource : PoolObject<Resource>
@@ -13,7 +12,7 @@ public class SpawnerResource : PoolObject<Resource>
     private WaitForSeconds _wait;
     private int _delay = 2;
 
-    void Start()
+    private void Start()
     {
         _wait = new(_delay);
         StartCoroutine(Spawner());
