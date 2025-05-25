@@ -14,6 +14,7 @@ public class Resource : MonoBehaviour
 
     public void Remove()
     {
+        IsTaken = false;
         Removed.Invoke(this);
     }
 }

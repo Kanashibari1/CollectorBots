@@ -3,14 +3,17 @@ using UnityEngine;
 using UnityEngine.AI;
 
 [RequireComponent(typeof(NavMeshAgent))]
+[RequireComponent(typeof(BotAnimator))]
 public class Bot : MonoBehaviour
 {
     [SerializeField] private Transform _bag;
 
+    private BotAnimator _botAnimator;
     private Transform _startPosition;
     private NavMeshAgent _agent;
-    private int _distance = 1;
     private Transform _walkTarget;
+
+    private int _distance = 1;
 
     public event Action<Bot> Remove;
 
@@ -18,6 +21,7 @@ public class Bot : MonoBehaviour
 
     private void Awake()
     {
+        _botAnimator = GetComponent<BotAnimator>();
         _agent = GetComponent<NavMeshAgent>();
     }
 
@@ -41,25 +45,9 @@ public class Bot : MonoBehaviour
         }
     }
 
-    public void WalkTarget(Transform target)
-    {
-        if (target.TryGetComponent(out Resource resource))
-        {
-            _walkTarget = resource.transform;
-        }
-        else
-        {
-            _walkTarget = target;
-        }
-    }
-
-    public void InitStartPosition(Transform position)
-    {
-        _startPosition = position.transform;
-    }
-
     private void TakeResource(Resource resource)
     {
+        resource.IsTake();
         _resource = resource;
         resource.transform.SetParent(_bag, false);
         resource.transform.position = _bag.transform.position;
@@ -70,6 +58,7 @@ public class Bot : MonoBehaviour
     {
         _walkTarget = null;
         Remove.Invoke(this);
+        _botAnimator.Run(false);
 
         if (_resource != null)
         {
@@ -77,5 +66,24 @@ public class Bot : MonoBehaviour
             _resource.Remove();
             _resource = null;
         }
+    }
+
+    public void WalkTarget(Transform target)
+    {
+        if (target.TryGetComponent(out Resource resource))
+        {
+            _walkTarget = resource.transform;
+        }
+        else
+        {
+            _walkTarget = target;
+        }
+
+        _botAnimator.Run(true);
+    }
+
+    public void InitStartPosition(Transform position)
+    {
+        _startPosition = position.transform;
     }
 }

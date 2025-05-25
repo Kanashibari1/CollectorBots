@@ -28,7 +28,7 @@ public class Scanner : MonoBehaviour
         {
             collider.TryGetComponent(out Resource resource);
 
-            if (resource.IsTaken == false)
+            if (resource.IsTaken != true)
             {
                 resourcesOnMap.Enqueue(resource);
             }

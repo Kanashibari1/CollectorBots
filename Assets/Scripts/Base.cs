@@ -4,20 +4,25 @@ using UnityEngine;
 
 [RequireComponent(typeof(SpawnerBots))]
 [RequireComponent(typeof(Scanner))]
+[RequireComponent(typeof(Storage))]
 public class Base : MonoBehaviour
 {
     [SerializeField] private Transform _storage;
 
-    private Scanner _scanner;
-    private SpawnerBots _spawnerBots;
     private List<Bot> _freeBots = new();
     private List<Bot> _busyBots = new();
     private List<Resource> _busyResource = new();
-    private int _botCount = 3;
+
+    private Storage _scoreCounter;
+    private Scanner _scanner;
+    private SpawnerBots _spawnerBots;
     private Coroutine _coroutine;
+
+    private int _botCount = 3;
 
     private void Awake()
     {
+        _scoreCounter = GetComponent<Storage>();
         _scanner = GetComponent<Scanner>();
         _spawnerBots = GetComponent<SpawnerBots>();
     }
@@ -47,16 +52,6 @@ public class Base : MonoBehaviour
         }
     }
 
-    public void FoundResource(Queue<Resource> resources)
-    {
-        if (_coroutine != null)
-        {
-            StopCoroutine(_coroutine);
-        }
-
-        _coroutine = StartCoroutine(WalkGetResource(resources));
-    }
-
     private IEnumerator WalkGetResource(Queue<Resource> resources)
     {
         Resource resource;
@@ -72,9 +67,9 @@ public class Base : MonoBehaviour
                     _busyResource.Add(resource);
                     BotStatus(_freeBots[0], resource.transform);
                 }
+            }
 
                 yield return null;
-            }
         }
     }
 
@@ -91,11 +86,22 @@ public class Base : MonoBehaviour
         _freeBots.Add(bot);
         _busyBots.Remove(bot);
 
-        if(bot._resource != null)
+        if (bot._resource != null)
         {
             _busyResource.Remove(bot._resource);
+            _scoreCounter.Add();
         }
 
         bot.Remove -= Remove;
+    }
+
+    public void FoundResource(Queue<Resource> resources)
+    {
+        if (_coroutine != null)
+        {
+            StopCoroutine(_coroutine);
+        }
+
+        _coroutine = StartCoroutine(WalkGetResource(resources));
     }
 }

@@ -5,12 +5,13 @@ public class SpawnerResource : PoolObject<Resource>
 {
     [SerializeField] private Resource _resource;
 
+    private WaitForSeconds _wait;
+
     private int _minPositionX = 5;
     private int _manPositionX = 25;
     private int _minPositionZ = 5;
     private int _manPositionZ = 40;
-    private WaitForSeconds _wait;
-    private int _delay = 2;
+    private int _delay = 5;
 
     private void Start()
     {
@@ -26,6 +27,7 @@ public class SpawnerResource : PoolObject<Resource>
            int positionZ = Random.Range(_minPositionZ, _manPositionZ);
 
            Resource resource = Get(_resource);
+           resource.gameObject.SetActive(true);
            resource.Removed += Remove;
            resource.transform.position = new Vector3(positionX, 0, positionZ);
            yield return _wait;
