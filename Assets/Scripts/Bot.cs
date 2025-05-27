@@ -15,9 +15,9 @@ public class Bot : MonoBehaviour
 
     private int _distance = 1;
 
-    public event Action<Bot> Remove;
+    public event Action<Bot> Returned;
 
-    public Resource _resource { get; private set; }
+    public Resource Resource { get; private set; }
 
     private void Awake()
     {
@@ -39,45 +39,29 @@ public class Bot : MonoBehaviour
                 }
                 else
                 {
-                    NewTarget();
+                    Reset();
                 }
             }
         }
     }
 
-    private void TakeResource(Resource resource)
-    {
-        resource.IsTake();
-        _resource = resource;
-        resource.transform.SetParent(_bag, false);
-        resource.transform.position = _bag.transform.position;
-        WalkTarget(_startPosition);
-    }
-
-    private void NewTarget()
+    private void Reset()
     {
         _walkTarget = null;
-        Remove.Invoke(this);
+        Returned.Invoke(this);
         _botAnimator.Run(false);
 
-        if (_resource != null)
+        if (Resource != null)
         {
-            _resource.transform.parent = null;
-            _resource.Remove();
-            _resource = null;
+            Resource.transform.parent = null;
+            Resource.Remove();
+            Resource = null;
         }
     }
 
     public void WalkTarget(Transform target)
     {
-        if (target.TryGetComponent(out Resource resource))
-        {
-            _walkTarget = resource.transform;
-        }
-        else
-        {
-            _walkTarget = target;
-        }
+        _walkTarget = target;
 
         _botAnimator.Run(true);
     }
@@ -85,5 +69,13 @@ public class Bot : MonoBehaviour
     public void InitStartPosition(Transform position)
     {
         _startPosition = position.transform;
+    }
+
+    private void TakeResource(Resource resource)
+    {
+        Resource = resource;
+        resource.transform.SetParent(_bag, false);
+        resource.transform.position = _bag.transform.position;
+        WalkTarget(_startPosition);
     }
 }

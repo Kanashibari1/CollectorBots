@@ -1,8 +1,8 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(SpawnerBots))]
+[RequireComponent(typeof(CreateBots))]
 [RequireComponent(typeof(Scanner))]
 [RequireComponent(typeof(Storage))]
 public class Base : MonoBehaviour
@@ -11,20 +11,18 @@ public class Base : MonoBehaviour
 
     private List<Bot> _freeBots = new();
     private List<Bot> _busyBots = new();
-    private List<Resource> _busyResource = new();
 
     private Storage _scoreCounter;
-    private Scanner _scanner;
-    private SpawnerBots _spawnerBots;
-    private Coroutine _coroutine;
+    private CreateBots _spawnerBots;
 
     private int _botCount = 3;
+
+    public event Action<Resource> Removed;
 
     private void Awake()
     {
         _scoreCounter = GetComponent<Storage>();
-        _scanner = GetComponent<Scanner>();
-        _spawnerBots = GetComponent<SpawnerBots>();
+        _spawnerBots = GetComponent<CreateBots>();
     }
 
     private void Start()
@@ -32,76 +30,46 @@ public class Base : MonoBehaviour
         Init();
     }
 
-    private void OnEnable()
+    public bool WalkGetResource(Resource resource)
     {
-        _scanner.ResourceFounded += FoundResource;
-    }
+        if (_freeBots.Count > 0)
+        {
+            SetBotStatus(_freeBots[0], resource.transform);
+            return true;
+        }
 
-    private void OnDisable()
-    {
-        _scanner.ResourceFounded -= FoundResource;
+        return false;
     }
 
     private void Init()
     {
         for (int i = 0; i < _botCount; i++)
         {
-            Bot bot = _spawnerBots.CreateBots();
+            Bot bot = _spawnerBots.Create();
             bot.InitStartPosition(_storage);
             _freeBots.Add(bot);
         }
     }
 
-    private IEnumerator WalkGetResource(Queue<Resource> resources)
-    {
-        Resource resource;
-
-        while (resources.Count > 0)
-        {
-            if (_freeBots.Count > 0)
-            {
-                resource = resources.Dequeue();
-
-                if (_busyResource.Contains(resource) != true)
-                {
-                    _busyResource.Add(resource);
-                    BotStatus(_freeBots[0], resource.transform);
-                }
-            }
-
-                yield return null;
-        }
-    }
-
-    private void BotStatus(Bot bot, Transform target)
+    private void SetBotStatus(Bot bot, Transform target)
     {
         _freeBots.Remove(bot);
         _busyBots.Add(bot);
         bot.WalkTarget(target);
-        bot.Remove += Remove;
+        bot.Returned += Return;
     }
 
-    private void Remove(Bot bot)
+    private void Return(Bot bot)
     {
         _freeBots.Add(bot);
         _busyBots.Remove(bot);
 
-        if (bot._resource != null)
+        if (bot.Resource != null)
         {
-            _busyResource.Remove(bot._resource);
+            Removed.Invoke(bot.Resource);
             _scoreCounter.Add();
         }
 
-        bot.Remove -= Remove;
-    }
-
-    public void FoundResource(Queue<Resource> resources)
-    {
-        if (_coroutine != null)
-        {
-            StopCoroutine(_coroutine);
-        }
-
-        _coroutine = StartCoroutine(WalkGetResource(resources));
+        bot.Returned -= Return;
     }
 }

@@ -11,7 +11,7 @@ public class SpawnerResource : PoolObject<Resource>
     private int _manPositionX = 25;
     private int _minPositionZ = 5;
     private int _manPositionZ = 40;
-    private int _delay = 5;
+    private int _delay = 3;
 
     private void Start()
     {
@@ -37,6 +37,7 @@ public class SpawnerResource : PoolObject<Resource>
     private void Remove(Resource resource)
     {
         resource.Removed -= Remove;
-        RemoveObj(resource);
+        resource.gameObject.SetActive(false);
+        Release(resource);
     }
 }

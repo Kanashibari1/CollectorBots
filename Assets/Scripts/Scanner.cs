@@ -28,18 +28,17 @@ public class Scanner : MonoBehaviour
         {
             collider.TryGetComponent(out Resource resource);
 
-            if (resource.IsTaken != true)
-            {
-                resourcesOnMap.Enqueue(resource);
-            }
+            resourcesOnMap.Enqueue(resource);
         }
     }
 
     private IEnumerator ScanCoroutine()
     {
+        WaitForSeconds _sleepTime = new(_delay);
+
         while (enabled)
         {
-            yield return new WaitForSeconds(_delay);
+            yield return _sleepTime;
 
             GetRecourseOnMap();
             ResourceFounded.Invoke(resourcesOnMap);
