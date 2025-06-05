@@ -5,8 +5,6 @@ public class SpawnerResource : PoolObject<Resource>
 {
     [SerializeField] private Resource _resource;
 
-    private WaitForSeconds _wait;
-
     private int _minPositionX = 5;
     private int _manPositionX = 25;
     private int _minPositionZ = 5;
@@ -15,14 +13,17 @@ public class SpawnerResource : PoolObject<Resource>
 
     private void Start()
     {
-        _wait = new(_delay);
         StartCoroutine(Spawner());
     }
 
     private IEnumerator Spawner()
     {
+        WaitForSeconds _wait = new(_delay);
+
         while (enabled)
         {
+           yield return _wait;
+
            int positionX = Random.Range(_minPositionX, _manPositionX);
            int positionZ = Random.Range(_minPositionZ, _manPositionZ);
 
@@ -30,7 +31,6 @@ public class SpawnerResource : PoolObject<Resource>
            resource.gameObject.SetActive(true);
            resource.Removed += Remove;
            resource.transform.position = new Vector3(positionX, 0, positionZ);
-           yield return _wait;
         }
     }
 

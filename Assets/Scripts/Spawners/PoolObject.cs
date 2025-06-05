@@ -5,11 +5,11 @@ public class PoolObject<T> : MonoBehaviour where T : MonoBehaviour
 {
     private Queue<T> _pool = new();
 
-    public T Get(T @object)
+    public T Get(T prefab)
     {
         if(_pool.Count == 0)
         {
-            Create(@object);
+            Create(prefab);
         }
         
         T obj = _pool.Dequeue();
@@ -22,9 +22,9 @@ public class PoolObject<T> : MonoBehaviour where T : MonoBehaviour
         _pool.Enqueue(obj);
     }
 
-    private void Create(T obj)
+    private void Create(T prefab)
     {
-        T @object = GameObject.Instantiate(obj);
+        T @object = GameObject.Instantiate(prefab);
         _pool.Enqueue(@object);
     }
 }

@@ -819,6 +819,7 @@ GameObject:
   - component: {fileID: 5575639332468076429}
   - component: {fileID: 4913577093719052302}
   - component: {fileID: 870881318402126284}
+  - component: {fileID: 523301478050693153}
   m_Layer: 6
   m_Name: Bot Variant
   m_TagString: Untagged
@@ -835,7 +836,7 @@ Transform:
   m_GameObject: {fileID: 5776961963025313495}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 29.480059, y: 6.7, z: 37.363323}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -933,6 +934,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a95f90832a3ddb94c984a1f5b57521e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &523301478050693153
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5776961963025313495}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6aa4f24745f7de4ebb440c9ba3bbb11, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _base: {fileID: 43684583016168219, guid: aef770d24f7246e4d82dced046c31212, type: 3}
+  _storage: {fileID: 521683885583889567, guid: 74ff99ba0907ab343a2406bbeb0d69fb, type: 3}
 --- !u!1 &5776961963025313497
 GameObject:
   m_ObjectHideFlags: 0

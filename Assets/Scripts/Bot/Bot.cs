@@ -8,19 +8,24 @@ public class Bot : MonoBehaviour
 {
     [SerializeField] private Transform _bag;
 
+    private SpawnerBase _spawn;
     private BotAnimator _botAnimator;
     private Transform _startPosition;
     private NavMeshAgent _agent;
     private Transform _walkTarget;
+    private Storage _storage;
+    private BotsCreate _botsCreate;
 
     private int _distance = 1;
 
     public event Action<Bot> Returned;
+    public event Action<Flag, Bot> FinishCreated;
 
     public Resource Resource { get; private set; }
 
     private void Awake()
     {
+        _spawn = GetComponent<SpawnerBase>();
         _botAnimator = GetComponent<BotAnimator>();
         _agent = GetComponent<NavMeshAgent>();
     }
@@ -36,6 +41,10 @@ public class Bot : MonoBehaviour
                 if (_walkTarget.TryGetComponent(out Resource resource))
                 {
                     TakeResource(resource);
+                }
+                else if(_walkTarget.TryGetComponent(out Flag flag))
+                {
+                    CreateBase(flag.transform.position, flag);
                 }
                 else
                 {
@@ -59,6 +68,12 @@ public class Bot : MonoBehaviour
         }
     }
 
+    public void Init(Storage storage, BotsCreate botsCreate)
+    {
+        _storage = storage;
+        _botsCreate = botsCreate;
+    }
+
     public void WalkTarget(Transform target)
     {
         _walkTarget = target;
@@ -66,7 +81,7 @@ public class Bot : MonoBehaviour
         _botAnimator.Run(true);
     }
 
-    public void InitStartPosition(Transform position)
+    public void GetPositionStorage(Transform position)
     {
         _startPosition = position.transform;
     }
@@ -77,5 +92,13 @@ public class Bot : MonoBehaviour
         resource.transform.SetParent(_bag, false);
         resource.transform.position = _bag.transform.position;
         WalkTarget(_startPosition);
+    }
+
+    private void CreateBase(Vector3 position, Flag flag)
+    {
+        Base newBase = _spawn.Spawn(position, _storage, _botsCreate);
+        _walkTarget = null;
+        newBase.AddBotNewBase(this);
+        FinishCreated.Invoke(flag, this);
     }
 }
