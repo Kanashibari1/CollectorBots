@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Warehouse))]
-[RequireComponent(typeof(Flag))]
-[RequireComponent(typeof(StateInit))]
 public class Base : MonoBehaviour
 {
     [SerializeField] private Transform _storagePosition;
@@ -13,18 +11,21 @@ public class Base : MonoBehaviour
     private List<Bot> _freeBots = new();
     private List<Bot> _busyBots = new();
 
-    private Transform _position;
+    private Transform _positionNewBase;
     private Storage _storage;
     private Warehouse _wereHouse;
     private BotCreates _botsCreate;
 
-    public int BotsCount { get; private set; }
+    private int _resourceCreateBots = 3;
+    private int _resourceCreateBase = 5;
+
+    public int BotsCount => _freeBots.Count + _busyBots.Count;
 
     public bool IsBuilding { get; private set; } = false;
 
     public int BuildingCount { get; private set; } = 0;
 
-    public event Action BoiledBase;
+    public event Action BuiltBase;
 
     private void Awake()
     {
@@ -33,7 +34,7 @@ public class Base : MonoBehaviour
 
     private void Start()
     {
-        StartCoroutine(WalkGetResource());
+        StartCoroutine(AssignTaskBot());
     }
 
     public void Init(Storage dataBase, BotCreates botsCreate)
@@ -45,54 +46,47 @@ public class Base : MonoBehaviour
     public void SetTarget(Transform position)
     {
         IsBuilding = true;
-        _position = position;
+        _positionNewBase = position;
     }
 
     public void StartGame(Bot bot)
     {
-        bot.GetPositionStorage(_storagePosition);
+        bot.SetPositionStorage(_storagePosition);
         _freeBots.Add(bot);
     }
 
-    public void StartBuildingBase()
-    {
-        StartCoroutine(BuildingBase());
-        _wereHouse.Remove();
-    }
-
-    public void Spawn()
+    public void SpawnBots()
     {
         Bot bot = _botsCreate.Create(this);
-        bot.GetPositionStorage(_storagePosition);
+        bot.SetPositionStorage(_storagePosition);
         _freeBots.Add(bot);
     }
 
     public void AddBotNewBase(Bot bot)
     {
         _freeBots.Add(bot);
-        bot.GetPositionStorage(_storagePosition);
+        bot.SetPositionStorage(_storagePosition);
     }
 
     public void RemoveBot(Bot bot)
     {
         bot.Returned -= Return;
         _busyBots.Remove(bot);
-        BoiledBase.Invoke();
+        BuiltBase.Invoke();
         bot.FinishCreated -= RemoveBot;
     }
 
-    private IEnumerator WalkGetResource()
+    private IEnumerator AssignTaskBot()
     {
         while (enabled)
         {
             if (_freeBots.Count > 0)
             {
-                BotsCount = _freeBots.Count + _busyBots.Count;
-                Resource resource = _storage.SetTarget();
+                Resource resource = _storage.GetTarget();
 
                 if (resource != null)
                 {
-                    SetBotStatus(_freeBots[0], resource.transform);
+                    SetBotTask(_freeBots[0], resource.transform);
                 }
             }
 
@@ -100,26 +94,21 @@ public class Base : MonoBehaviour
         }
     }
 
-    private IEnumerator BuildingBase()
+    private void CreateBase()
     {
-        while (_freeBots.Count == 0)
-        {
-            yield return null;
-        }
-
         IsBuilding = false;
         BuildingCount++;
         Bot bot = _freeBots[0];
         bot.FinishCreated += RemoveBot;
         bot.Init(_storage, _botsCreate);
-        SetBotStatus(bot, _position);
+        SetBotTask(bot, _positionNewBase);
     }
 
-    private void SetBotStatus(Bot bot, Transform target)
+    private void SetBotTask(Bot bot, Transform target)
     {
         _freeBots.Remove(bot);
         _busyBots.Add(bot);
-        bot.WalkTarget(target);
+        bot.SetTarget(target);
         bot.Returned += Return;
     }
 
@@ -135,10 +124,26 @@ public class Base : MonoBehaviour
         }
 
         bot.Returned -= Return;
+
+        State();
     }
 
     private void AddResourceStorage(Bot bot)
     {
         _wereHouse.Add();
+    }
+
+    private void State()
+    {
+        if (IsBuilding && _wereHouse.ResourceCount == _resourceCreateBase)
+        {
+            CreateBase();
+            _wereHouse.Remove(_resourceCreateBase);
+        }
+        else if(IsBuilding == false && _wereHouse.ResourceCount == _resourceCreateBots)
+        {
+            SpawnBots();
+            _wereHouse.Remove(_resourceCreateBots);
+        }
     }
 }

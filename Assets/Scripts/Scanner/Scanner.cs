@@ -18,7 +18,7 @@ public class Scanner : MonoBehaviour
         StartCoroutine(ScanCoroutine());
     }
 
-    private void GetRecourseOnMap()
+    private void FindRecourseOnMap()
     {
         Collider[] colliders = Physics.OverlapSphere(transform.position, _radius, _mask);
 
@@ -40,7 +40,7 @@ public class Scanner : MonoBehaviour
         {
             yield return _sleepTime;
 
-            GetRecourseOnMap();
+            FindRecourseOnMap();
             ResourceFounded.Invoke(resourcesOnMap);
         }
     }

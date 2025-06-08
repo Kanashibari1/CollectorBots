@@ -1,5 +1,4 @@
 using UnityEngine;
-using System;
 
 [RequireComponent(typeof(RaycastHandler))]
 public class SelectorLocation : MonoBehaviour
@@ -36,7 +35,7 @@ public class SelectorLocation : MonoBehaviour
         if (hit.collider.TryGetComponent(out Base @base))
         {
             _base = @base;
-            _base.BoiledBase += TurnOffActive;
+            _base.BuiltBase += TurnOffActive;
         }
         else if (hit.collider.TryGetComponent(out Ground _) && _base != null)
         {
@@ -52,6 +51,6 @@ public class SelectorLocation : MonoBehaviour
     private void TurnOffActive()
     {
         _flag.TurnOffInactive();
-        _base.BoiledBase -= TurnOffActive;
+        _base.BuiltBase -= TurnOffActive;
     }
 }

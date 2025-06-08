@@ -10,12 +10,12 @@ public class Warehouse : MonoBehaviour
     public void Add()
     {
         ResourceCount++;
-        ValueChanged.Invoke(ResourceCount);
+        ValueChanged?.Invoke(ResourceCount);
     }
 
-    public void Remove()
+    public void Remove(int resourceCount)
     {
-        ResourceCount = 0;
-        ValueChanged.Invoke(ResourceCount);
+        ResourceCount -= resourceCount;
+        ValueChanged?.Invoke(ResourceCount);
     }
 }

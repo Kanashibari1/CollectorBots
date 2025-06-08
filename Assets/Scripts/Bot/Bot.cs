@@ -4,6 +4,7 @@ using UnityEngine.AI;
 
 [RequireComponent(typeof(NavMeshAgent))]
 [RequireComponent(typeof(BotAnimator))]
+[RequireComponent(typeof(SpawnerBase))]
 public class Bot : MonoBehaviour
 {
     [SerializeField] private Transform _bag;
@@ -12,7 +13,7 @@ public class Bot : MonoBehaviour
     private BotAnimator _botAnimator;
     private Transform _startPosition;
     private NavMeshAgent _agent;
-    private Transform _walkTarget;
+    private Transform _target;
     private Storage _storage;
     private BotCreates _botsCreate;
 
@@ -32,17 +33,17 @@ public class Bot : MonoBehaviour
 
     private void Update()
     {
-        if (_walkTarget != null)
+        if (_target != null)
         {
-            _agent.SetDestination(_walkTarget.position);
+            _agent.SetDestination(_target.position);
 
-            if ((transform.position - _walkTarget.position).sqrMagnitude < _distance)
+            if ((transform.position - _target.position).sqrMagnitude < _distance)
             {
-                if (_walkTarget.TryGetComponent(out Resource resource))
+                if (_target.TryGetComponent(out Resource resource))
                 {
                     TakeResource(resource);
                 }
-                else if(_walkTarget.TryGetComponent(out Flag flag))
+                else if(_target.TryGetComponent(out Flag flag))
                 {
                     CreateBase(flag.transform.position);
                 }
@@ -56,7 +57,7 @@ public class Bot : MonoBehaviour
 
     private void Reset()
     {
-        _walkTarget = null;
+        _target = null;
         Returned.Invoke(this);
         _botAnimator.Run(false);
 
@@ -74,14 +75,14 @@ public class Bot : MonoBehaviour
         _botsCreate = botsCreate;
     }
 
-    public void WalkTarget(Transform target)
+    public void SetTarget(Transform target)
     {
-        _walkTarget = target;
+        _target = target;
 
         _botAnimator.Run(true);
     }
 
-    public void GetPositionStorage(Transform position)
+    public void SetPositionStorage(Transform position)
     {
         _startPosition = position.transform;
     }
@@ -91,13 +92,13 @@ public class Bot : MonoBehaviour
         Resource = resource;
         resource.transform.SetParent(_bag, false);
         resource.transform.position = _bag.transform.position;
-        WalkTarget(_startPosition);
+        SetTarget(_startPosition);
     }
 
     private void CreateBase(Vector3 position)
     {
         Base newBase = _spawn.Spawn(position, _storage, _botsCreate);
-        _walkTarget = null;
+        _target = null;
         newBase.AddBotNewBase(this);
         FinishCreated.Invoke(this);
     }

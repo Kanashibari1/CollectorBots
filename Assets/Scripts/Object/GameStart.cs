@@ -1,6 +1,6 @@
-using Unity.AI.Navigation;
 using UnityEngine;
 
+[RequireComponent(typeof(SpawnerBase))]
 public class GameStart : MonoBehaviour
 {
     [SerializeField] private Base _base;

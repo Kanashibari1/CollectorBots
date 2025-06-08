@@ -15,15 +15,15 @@ public class WarehouseView : MonoBehaviour
 
     private void OnEnable()
     {
-        _storage.ValueChanged += OnValueChange;
+        _storage.ValueChanged += ValueChange;
     }
 
     private void OnDisable()
     {
-        _storage.ValueChanged -= OnValueChange;
+        _storage.ValueChanged -= ValueChange;
     }
 
-    private void OnValueChange(int value)
+    private void ValueChange(int value)
     {
         _textMeshProUGUI.text = value.ToString();
     }

@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -17,15 +16,15 @@ public class Storage : MonoBehaviour
 
     private void OnEnable()
     {
-        _scanner.ResourceFounded += GetResource;
+        _scanner.ResourceFounded += AddResource;
     }
 
     private void OnDisable()
     {
-        _scanner.ResourceFounded -= GetResource;
+        _scanner.ResourceFounded -= AddResource;
     }
 
-    public void GetResource(Queue<Resource> resources)
+    public void AddResource(Queue<Resource> resources)
     {
         foreach (Resource resource in resources)
         {
@@ -36,7 +35,7 @@ public class Storage : MonoBehaviour
         }
     }
 
-    public Resource SetTarget()
+    public Resource GetTarget()
     {
         Resource resource = null;
 
