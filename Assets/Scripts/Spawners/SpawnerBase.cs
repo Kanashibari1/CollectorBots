@@ -4,12 +4,10 @@ public class SpawnerBase : MonoBehaviour
 {
     [SerializeField] private Base _base;
 
-    private Vector3 _position = new(0, 1, 0);
-
-    public Base Spawn(Vector3 position, Storage storage, BotsCreate botsCreate)
+    public Base Spawn(Vector3 position, Storage storage, BotCreates botsCreate)
     {
-        Base @base = Instantiate(_base, position + _position, Quaternion.identity);
-        @base.init(storage, botsCreate);
+        Base @base = Instantiate(_base, position, Quaternion.identity);
+        @base.Init(storage, botsCreate);
         return @base;
     }
 }

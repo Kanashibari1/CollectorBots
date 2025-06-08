@@ -1,16 +1,13 @@
-using System.Collections;
-using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 
 public class Flag : MonoBehaviour
 {
-    public void SetActive()
+    public void TurnOnActive()
     {
         gameObject.SetActive(true);
     }
 
-    public void SetInactive()
+    public void TurnOffInactive()
     {
         gameObject.SetActive(false);
     }

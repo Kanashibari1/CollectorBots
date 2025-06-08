@@ -14,12 +14,12 @@ public class Bot : MonoBehaviour
     private NavMeshAgent _agent;
     private Transform _walkTarget;
     private Storage _storage;
-    private BotsCreate _botsCreate;
+    private BotCreates _botsCreate;
 
     private int _distance = 1;
 
     public event Action<Bot> Returned;
-    public event Action<Flag, Bot> FinishCreated;
+    public event Action<Bot> FinishCreated;
 
     public Resource Resource { get; private set; }
 
@@ -44,7 +44,7 @@ public class Bot : MonoBehaviour
                 }
                 else if(_walkTarget.TryGetComponent(out Flag flag))
                 {
-                    CreateBase(flag.transform.position, flag);
+                    CreateBase(flag.transform.position);
                 }
                 else
                 {
@@ -68,7 +68,7 @@ public class Bot : MonoBehaviour
         }
     }
 
-    public void Init(Storage storage, BotsCreate botsCreate)
+    public void Init(Storage storage, BotCreates botsCreate)
     {
         _storage = storage;
         _botsCreate = botsCreate;
@@ -94,11 +94,11 @@ public class Bot : MonoBehaviour
         WalkTarget(_startPosition);
     }
 
-    private void CreateBase(Vector3 position, Flag flag)
+    private void CreateBase(Vector3 position)
     {
         Base newBase = _spawn.Spawn(position, _storage, _botsCreate);
         _walkTarget = null;
         newBase.AddBotNewBase(this);
-        FinishCreated.Invoke(flag, this);
+        FinishCreated.Invoke(this);
     }
 }

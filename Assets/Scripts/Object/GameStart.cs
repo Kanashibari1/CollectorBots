@@ -1,11 +1,11 @@
 using Unity.AI.Navigation;
 using UnityEngine;
 
-public class StartGame : MonoBehaviour
+public class GameStart : MonoBehaviour
 {
     [SerializeField] private Base _base;
     [SerializeField] private Storage _storage;
-    [SerializeField] private BotsCreate _botsCreate;
+    [SerializeField] private BotCreates _botsCreate;
 
     private SpawnerBase _spawnerBase;
 
@@ -16,7 +16,7 @@ public class StartGame : MonoBehaviour
         _spawnerBase = GetComponent<SpawnerBase>();
     }
 
-    void Start()
+    private void Start()
     {
         Storage storage = Instantiate(_storage);
         Base @base = _spawnerBase.Spawn(_position, storage, _botsCreate);

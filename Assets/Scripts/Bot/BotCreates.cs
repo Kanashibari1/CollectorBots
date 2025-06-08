@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class BotsCreate : MonoBehaviour
+public class BotCreates : MonoBehaviour
 {
     [SerializeField] private Bot _bot;
 
